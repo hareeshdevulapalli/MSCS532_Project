@@ -1,0 +1,56 @@
+test_constructor_validation (tests.test_dispatcher.LifeCycleAndErrorTests.test_constructor_validation) ... ok
+test_driver_trip_cycle (tests.test_dispatcher.LifeCycleAndErrorTests.test_driver_trip_cycle) ... ok
+test_invalid_requests_and_ids (tests.test_dispatcher.LifeCycleAndErrorTests.test_invalid_requests_and_ids) ... ok
+test_invariants_hold_under_random_operations (tests.test_dispatcher.LifeCycleAndErrorTests.test_invariants_hold_under_random_operations) ... ok
+test_offline_and_online (tests.test_dispatcher.LifeCycleAndErrorTests.test_offline_and_online) ... ok
+test_chooses_by_driving_time_not_straight_line (tests.test_dispatcher.MatchingTests.test_chooses_by_driving_time_not_straight_line) ... ok
+test_drivers_at_same_corner_break_ties_by_id (tests.test_dispatcher.MatchingTests.test_drivers_at_same_corner_break_ties_by_id) ... ok
+test_tier_first_then_request_time (tests.test_dispatcher.MatchingTests.test_tier_first_then_request_time) ... ok
+test_wait_time_is_recorded (tests.test_dispatcher.MatchingTests.test_wait_time_is_recorded) ... ok
+test_assign_top_is_blocked_by_unreachable_front (tests.test_dispatcher.QueueFairnessTests.test_assign_top_is_blocked_by_unreachable_front) ... ok
+test_bumping_lets_old_standard_beat_new_premium (tests.test_dispatcher.QueueFairnessTests.test_bumping_lets_old_standard_beat_new_premium) ... ok
+test_bumps_stop_at_top_level (tests.test_dispatcher.QueueFairnessTests.test_bumps_stop_at_top_level) ... ok
+test_no_bumping_keeps_strict_tiers (tests.test_dispatcher.QueueFairnessTests.test_no_bumping_keeps_strict_tiers) ... ok
+test_round_without_drivers_changes_nothing (tests.test_dispatcher.QueueFairnessTests.test_round_without_drivers_changes_nothing) ... ok
+test_run_round_skips_and_requeues_unreachable_request (tests.test_dispatcher.QueueFairnessTests.test_run_round_skips_and_requeues_unreachable_request) ... ok
+test_fixed_list_misses_the_quickest_driver (tests.test_dispatcher.WidenedSearchTests.test_fixed_list_misses_the_quickest_driver) ... ok
+test_matches_slow_search_on_random_cities (tests.test_dispatcher.WidenedSearchTests.test_matches_slow_search_on_random_cities) ... ok
+test_no_widening_needed_on_open_grid (tests.test_dispatcher.WidenedSearchTests.test_no_widening_needed_on_open_grid) ... ok
+test_widened_search_finds_the_quickest_driver (tests.test_dispatcher.WidenedSearchTests.test_widened_search_finds_the_quickest_driver) ... ok
+test_change_priority_moves_entry_both_ways (tests.test_indexed_heap.IndexedMinHeapTests.test_change_priority_moves_entry_both_ways) ... ok
+test_duplicate_key_rejected (tests.test_indexed_heap.IndexedMinHeapTests.test_duplicate_key_rejected) ... ok
+test_empty_heap_errors (tests.test_indexed_heap.IndexedMinHeapTests.test_empty_heap_errors) ... ok
+test_pop_order_and_arrival_ties (tests.test_indexed_heap.IndexedMinHeapTests.test_pop_order_and_arrival_ties) ... ok
+test_random_operations_match_plain_dict (tests.test_indexed_heap.IndexedMinHeapTests.test_random_operations_match_plain_dict) ... ok
+test_single_entry_and_all_keys (tests.test_indexed_heap.IndexedMinHeapTests.test_single_entry_and_all_keys) ... ok
+test_tuple_priorities_order_tier_then_time (tests.test_indexed_heap.IndexedMinHeapTests.test_tuple_priorities_order_tier_then_time) ... ok
+test_bad_input (tests.test_road_network.RoadNetworkTests.test_bad_input) ... ok
+test_bound_never_exceeds_true_driving_time (tests.test_road_network.RoadNetworkTests.test_bound_never_exceeds_true_driving_time) ... ok
+test_max_speed_and_lower_bound (tests.test_road_network.RoadNetworkTests.test_max_speed_and_lower_bound) ... ok
+test_missing_streets_and_nodes_raise (tests.test_road_network.RoadNetworkTests.test_missing_streets_and_nodes_raise) ... ok
+test_one_way_and_closed_streets (tests.test_road_network.RoadNetworkTests.test_one_way_and_closed_streets) ... ok
+test_shortest_path_takes_quicker_detour (tests.test_road_network.RoadNetworkTests.test_shortest_path_takes_quicker_detour) ... ok
+test_times_to_target_agrees_with_shortest_path (tests.test_road_network.RoadNetworkTests.test_times_to_target_agrees_with_shortest_path) ... ok
+test_zero_time_street_and_empty_network_bounds (tests.test_road_network.RoadNetworkTests.test_zero_time_street_and_empty_network_bounds) ... ok
+test_all_scenarios_run (tests.test_simulation.DemoTests.test_all_scenarios_run) ... ok
+test_bad_arguments_are_rejected (tests.test_simulation.DemoTests.test_bad_arguments_are_rejected) ... ok
+test_river_scenario_shows_the_improvement (tests.test_simulation.DemoTests.test_river_scenario_shows_the_improvement) ... ok
+test_every_request_is_accounted_for (tests.test_simulation.SimulationTests.test_every_request_is_accounted_for) ... ok
+test_no_requests (tests.test_simulation.SimulationTests.test_no_requests) ... ok
+test_river_makes_the_search_widen (tests.test_simulation.SimulationTests.test_river_makes_the_search_widen) ... ok
+test_same_seed_gives_same_result (tests.test_simulation.SimulationTests.test_same_seed_gives_same_result) ... ok
+test_waits_never_exceed_patience (tests.test_simulation.SimulationTests.test_waits_never_exceed_patience) ... ok
+test_agrees_with_full_scan_on_random_points (tests.test_spatial_grid.SpatialGridTests.test_agrees_with_full_scan_on_random_points) ... ok
+test_empty_grid (tests.test_spatial_grid.SpatialGridTests.test_empty_grid) ... ok
+test_k_bigger_than_grid_and_negative_coords (tests.test_spatial_grid.SpatialGridTests.test_k_bigger_than_grid_and_negative_coords) ... ok
+test_max_distance (tests.test_spatial_grid.SpatialGridTests.test_max_distance) ... ok
+test_missing_id_errors (tests.test_spatial_grid.SpatialGridTests.test_missing_id_errors) ... ok
+test_move_and_delete (tests.test_spatial_grid.SpatialGridTests.test_move_and_delete) ... ok
+test_move_inside_same_cell_keeps_one_cell (tests.test_spatial_grid.SpatialGridTests.test_move_inside_same_cell_keeps_one_cell) ... ok
+test_random_moves_still_agree_with_full_scan (tests.test_spatial_grid.SpatialGridTests.test_random_moves_still_agree_with_full_scan) ... ok
+test_rejects_bad_cell_size_and_duplicates (tests.test_spatial_grid.SpatialGridTests.test_rejects_bad_cell_size_and_duplicates) ... ok
+
+----------------------------------------------------------------------
+Ran 51 tests in 0.319s
+
+OK
