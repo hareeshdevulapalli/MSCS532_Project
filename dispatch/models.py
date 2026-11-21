@@ -3,6 +3,10 @@
 I put these in their own file so the data structure modules never need to
 import the dispatcher, and so new fields (rating, car type, surge zone) can
 be added later without touching the structures.
+
+Phase 3: the records use ``slots=True``. A slotted object has no per-object
+``__dict__``, which cuts the memory of each driver and request roughly in
+half when there are tens of thousands of them (Python 3.10+).
 """
 
 from dataclasses import dataclass
@@ -18,7 +22,7 @@ class DriverState(Enum):
     OFFLINE = "offline"    # logged out; matching ignores them
 
 
-@dataclass
+@dataclass(slots=True)
 class Driver:
     driver_id: str
     location: object
@@ -30,7 +34,7 @@ class Driver:
         return self.state is DriverState.FREE
 
 
-@dataclass
+@dataclass(slots=True)
 class TripRequest:
     request_id: str
     pickup: object
@@ -44,8 +48,13 @@ class TripRequest:
         """Tier number after bumps; 0 is the most urgent."""
         return max(TIER_PRIORITY[self.tier] - self.bumps, 0)
 
+    @property
+    def max_bumps(self):
+        """A request can be bumped until it reaches level 0."""
+        return TIER_PRIORITY[self.tier]
 
-@dataclass
+
+@dataclass(slots=True)
 class Assignment:
     request_id: str
     driver_id: str

@@ -1,0 +1,73 @@
+1. grid nearest-5 (constant density)
+  grid n=   1000: phase2     24.6 us  phase3      5.9 us  x4.2
+  grid n=   2000: phase2     49.4 us  phase3      5.9 us  x8.4
+  grid n=   4000: phase2     82.6 us  phase3      6.2 us  x13.3
+  grid n=   8000: phase2    156.9 us  phase3      6.1 us  x25.6
+  grid n=  16000: phase2    318.7 us  phase3      6.7 us  x47.3
+  grid n=  32000: phase2    603.0 us  phase3      6.9 us  x87.5
+  grid n=  64000: phase2   1168.7 us  phase3     10.4 us  x112.0
+  grid n= 128000: phase2   2487.4 us  phase3     15.0 us  x165.3
+  cell size: 50m 20us, 100m 9us, 200m 6us, 400m 7us, 800m 11us, 1600m 33us, 3200m 112us, 6400m 374us
+2. indexed heap, mixed operations
+  heap n=   1000: phase2   1.02 us/op  phase3   0.60 us/op  x1.7
+  heap n=   4000: phase2   1.19 us/op  phase3   0.64 us/op  x1.9
+  heap n=  16000: phase2   1.36 us/op  phase3   0.70 us/op  x1.9
+  heap n=  64000: phase2   2.13 us/op  phase3   1.44 us/op  x1.5
+  heap n= 256000: phase2   3.36 us/op  phase3   1.55 us/op  x2.2
+3. age_requests, one round
+  aging n=    500: phase2   0.042 ms  phase3   0.001 ms  x72
+  aging n=   1000: phase2   0.079 ms  phase3   0.001 ms  x135
+  aging n=   2000: phase2   0.152 ms  phase3   0.001 ms  x214
+  aging n=   4000: phase2   0.327 ms  phase3   0.003 ms  x112
+  aging n=   8000: phase2   0.663 ms  phase3   0.005 ms  x145
+  aging n=  16000: phase2   1.316 ms  phase3   0.008 ms  x160
+  aging n=  32000: phase2   2.974 ms  phase3   0.022 ms  x135
+  aging n=  64000: phase2   6.231 ms  phase3   0.051 ms  x123
+4. pick_driver on a river city
+  search  20x20 : phase2     44.4 us (  68.7 settled)  phase3      9.3 us (  13.3 settled)  x4.8
+  search  40x40 : phase2     59.4 us (  83.3 settled)  phase3     10.1 us (  14.2 settled)  x5.9
+  search  60x60 : phase2     73.5 us (  90.0 settled)  phase3      9.8 us (  12.9 settled)  x7.5
+  search  80x80 : phase2    108.2 us ( 104.9 settled)  phase3     11.2 us (  14.8 settled)  x9.7
+  search 120x120: phase2    131.3 us (  91.1 settled)  phase3     11.2 us (  14.4 settled)  x11.8
+  search 160x160: phase2    204.5 us ( 101.0 settled)  phase3     12.0 us (  14.3 settled)  x17.0
+  search  20x20 : phase2     44.4 us (  53.3 settled)  phase3      9.2 us (  12.7 settled)  x4.8
+  search  40x40 : phase2     45.7 us (  57.7 settled)  phase3     10.4 us (  14.4 settled)  x4.4
+  search  80x80 : phase2     74.8 us (  60.2 settled)  phase3     11.0 us (  14.8 settled)  x6.8
+  search 160x160: phase2    171.1 us (  57.7 settled)  phase3     11.9 us (  14.4 settled)  x14.4
+4b. trip-duration routes
+  routes  20x20 : dijkstra  0.095 ms  A*  0.043 ms  ALT8  0.042 ms (16 settled, 50 KiB, setup 0.01 s)
+  routes  40x40 : dijkstra  0.459 ms  A*  0.186 ms  ALT8  0.113 ms (35 settled, 200 KiB, setup 0.02 s)
+  routes  80x80 : dijkstra  2.096 ms  A*  0.825 ms  ALT8  0.317 ms (86 settled, 800 KiB, setup 0.09 s)
+  routes 120x120: dijkstra  5.485 ms  A*  2.041 ms  ALT8  0.487 ms (180 settled, 1800 KiB, setup 0.20 s)
+  routes 160x160: dijkstra  9.248 ms  A*  3.558 ms  ALT8  0.664 ms (236 settled, 3200 KiB, setup 0.33 s)
+5. whole simulation
+  sim calm  20x20  (60 drivers, 300 req): phase2    0.06 s  phase3   0.02 s (+0.00 setup)  x2.3  served 300/300  same=True
+  sim calm  40x40  (240 drivers, 600 req): phase2    0.33 s  phase3   0.08 s (+0.02 setup)  x3.5  served 600/600  same=True
+  sim calm  60x60  (540 drivers, 900 req): phase2    0.98 s  phase3   0.17 s (+0.04 setup)  x4.8  served 900/900  same=True
+  sim calm  80x80  (960 drivers, 1200 req): phase2    2.36 s  phase3   0.31 s (+0.06 setup)  x6.2  served 1200/1200  same=True
+  sim calm 100x100 (1500 drivers, 1500 req): phase2    4.70 s  phase3   0.58 s (+0.11 setup)  x6.8  served 1500/1500  same=True
+  sim calm 120x120 (2160 drivers, 1800 req): phase2    8.02 s  phase3   0.84 s (+0.16 setup)  x8.0  served 1800/1800  same=False
+  sim busy  20x20  (60 drivers, 300 req): phase2    0.07 s  phase3   0.03 s (+0.00 setup)  x2.0  served 300/300  same=True
+  sim busy  40x40  (240 drivers, 600 req): phase2    1.22 s  phase3   0.31 s (+0.03 setup)  x3.5  served 600/600  same=True
+  sim busy  60x60  (540 drivers, 900 req): phase2    2.73 s  phase3   0.43 s (+0.03 setup)  x5.9  served 900/900  same=True
+  sim busy  80x80  (960 drivers, 1200 req): phase2    5.07 s  phase3   0.96 s (+0.06 setup)  x4.9  served 1200/1200  same=True
+  sim busy 100x100 (1500 drivers, 1500 req): phase2   43.95 s  phase3   3.09 s (+0.10 setup)  x13.8  served 1266/1266  same=True
+6. memory
+  memory  20x20 : phase2   0.54 MiB  phase3   0.63 MiB
+  memory  40x40 : phase2   1.98 MiB  phase3   2.52 MiB
+  memory  60x60 : phase2   4.22 MiB  phase3   5.51 MiB
+  memory  80x80 : phase2   7.63 MiB  phase3  10.11 MiB
+  memory 100x100: phase2  10.90 MiB  phase3  14.23 MiB
+  shift 1h: phase2   2.28 MiB  phase3   2.52 MiB
+  shift 2h: phase2   2.59 MiB  phase3   2.52 MiB
+  shift 4h: phase2   3.14 MiB  phase3   2.76 MiB
+  shift 8h: phase2   4.29 MiB  phase3   3.24 MiB
+  record size: phase2 219 B  phase3 179 B
+7. accuracy vs speed
+  exact k=None    10.4 us  suboptimal  0.0%  extra pickup   0.0 s
+  fixed k=1       12.8 us  suboptimal  2.8%  extra pickup   6.8 s
+  fixed k=2       23.2 us  suboptimal  1.0%  extra pickup   1.5 s
+  fixed k=4       43.3 us  suboptimal  0.2%  extra pickup   1.3 s
+  fixed k=8      100.9 us  suboptimal  0.0%  extra pickup   0.0 s
+  fixed k=16     196.8 us  suboptimal  0.0%  extra pickup   0.0 s
+saved results/benchmarks.json

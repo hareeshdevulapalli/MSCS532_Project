@@ -52,8 +52,12 @@ class MatchingTests(unittest.TestCase):
         self.assertEqual(self.dispatcher.run_round(now=20.0)[0].waited, 8.0)
 
 
-class WidenedSearchTests(unittest.TestCase):
-    """Phase 2: the candidate list keeps growing until the speed bound says stop."""
+class ExactSearchTests(unittest.TestCase):
+    """The search must find the quickest driver by road, not by straight line.
+
+    Phase 2 did this by widening the candidate list; Phase 3 does it with a
+    single backward search that stops at the first free driver.
+    """
 
     def build(self, widen):
         dispatcher = Dispatcher(build_river_city(), cell_size=400.0, candidate_count=3, widen_search=widen)
@@ -68,19 +72,20 @@ class WidenedSearchTests(unittest.TestCase):
         self.assertNotEqual(match.driver_id, "same_bank")   # this is the Phase 1 problem
         self.assertGreater(match.pickup_time, 180)
 
-    def test_widened_search_finds_the_quickest_driver(self):
+    def test_exact_search_finds_the_quickest_driver(self):
         dispatcher = self.build(widen=True)
         match = dispatcher.assign_top()
         self.assertEqual((match.driver_id, match.pickup_time), ("same_bank", 180))
-        self.assertGreaterEqual(dispatcher.stats["widenings"], 1)
+        self.assertEqual(dispatcher.stats["searches"], 1)   # no restarts any more
 
-    def test_no_widening_needed_on_open_grid(self):
+    def test_one_search_and_few_intersections_on_open_grid(self):
         dispatcher = Dispatcher(build_grid_city(10, 10), cell_size=400.0, candidate_count=2)
         for n, spot in enumerate([(2, 2), (2, 3), (8, 8), (9, 0), (0, 9)]):
             dispatcher.add_driver(f"D{n}", spot)
         dispatcher.new_request("R", (2, 2), (5, 5), "standard", 0.0)
-        dispatcher.assign_top()
-        self.assertEqual((dispatcher.stats["searches"], dispatcher.stats["widenings"]), (1, 0))
+        self.assertEqual(dispatcher.assign_top().driver_id, "D0")
+        self.assertEqual(dispatcher.stats["searches"], 1)
+        self.assertEqual(dispatcher.stats["settled"], 1)    # driver is at the pickup itself
 
     def test_matches_slow_search_on_random_cities(self):
         rng = random.Random(2026)
@@ -132,7 +137,7 @@ class QueueFairnessTests(unittest.TestCase):
         dispatcher = self.blocked_dispatcher()
         matches = dispatcher.run_round(now=5.0)
         self.assertEqual([m.request_id for m in matches], ["near_standard"])
-        self.assertEqual(dispatcher._queue.peek(), ("far_premium", (1, 0.0)))
+        self.assertEqual(dispatcher._queue.peek(), ("far_premium", (1, 1, 0.0)))
         self.assertEqual(dispatcher.stats["skipped"], 1)
 
     def test_round_without_drivers_changes_nothing(self):
@@ -163,7 +168,7 @@ class QueueFairnessTests(unittest.TestCase):
         self.assertEqual(dispatcher.waiting_requests["R"].level, 1)
         dispatcher.age_requests(10_000)
         self.assertEqual(dispatcher.waiting_requests["R"].level, 0)
-        self.assertEqual(dispatcher._queue.get_priority("R"), (0, 0.0))
+        self.assertEqual(dispatcher._queue.get_priority("R"), (0, 2, 0.0))
         self.assertEqual(dispatcher.age_requests(20_000), 0)   # nothing left to promote
 
 
@@ -254,6 +259,9 @@ class LifeCycleAndErrorTests(unittest.TestCase):
             free = {d for d, rec in dispatcher.drivers.items() if rec.is_free}
             busy = {d for d, rec in dispatcher.drivers.items() if rec.state is DriverState.BUSY}
             self.assertEqual(free, set(dispatcher._free_grid._coords))
+            self.assertEqual(free, set().union(*dispatcher._free_at.values()))
+            for spot, ids in dispatcher._free_at.items():
+                self.assertTrue(all(dispatcher.drivers[d].location == spot for d in ids))
             self.assertEqual(busy, set(dispatcher.trips_in_progress))
             self.assertEqual(set(dispatcher.waiting_requests), set(dispatcher._queue.all_keys()))
 

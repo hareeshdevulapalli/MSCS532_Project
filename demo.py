@@ -1,16 +1,20 @@
-"""Command-line demo for the Phase 2 proof of concept.
+"""Command-line demo for the ride-hailing dispatcher (Phase 3).
 
 How to run it:
     python3 demo.py                 # every scenario
     python3 demo.py river           # just one
     python3 demo.py simulate --drivers 60 --requests 500 --seed 7
+    python3 demo.py simulate --size 60 --drivers 600 --requests 6000 --busy
+    python3 demo.py compare --size 40 --drivers 300 --requests 3000
 
 Scenarios:
     basic     add drivers, create and cancel requests, run a round, end trips
     river     fixed candidate list vs widened search when a river is in the way
     blocking  a request nobody can reach doesn't hold up the others any more
     aging     a standard ride that has waited a long time beats a new premium one
-    simulate  one simulated hour on a 20 x 20 street grid
+    simulate  one simulated hour on a street grid (--busy adds hotspots,
+              road incidents and driver shift changes)
+    compare   the same workload through the Phase 2 and Phase 3 dispatchers
 """
 
 import argparse
@@ -58,7 +62,7 @@ def demo_basic():
 
 
 def demo_river():
-    title("river: fixed list (Phase 1) vs widened search (Phase 2)")
+    title("river: fixed list (Phase 1) vs exact search (Phase 3)")
     print("  A river runs between columns 4 and 5 and the only bridge is in row 9.")
     print("  The pickup is at (4, 1). Four drivers are just across the water and")
     print("  one is further away in a straight line but on the same side, at (1, 4).")
@@ -71,10 +75,10 @@ def demo_river():
             disp.add_driver(driver_id, spot)
         disp.new_request("R", (4, 1), (0, 0), "standard", 0.0)
         match = disp.assign_top(now=0.0)
-        label = "widened (Phase 2)   " if widen else "fixed list (Phase 1)"
+        label = "exact search (Phase 3)" if widen else "fixed list (Phase 1)  "
         print(f"  {label}: {match.driver_id:<9} pickup {match.pickup_time:.0f} s"
               f"  [{disp.stats['searches']} search(es), "
-              f"{disp.stats['widenings']} widening(s)]")
+              f"{disp.stats['settled']} intersections settled]")
 
 
 def demo_blocking():
@@ -109,13 +113,45 @@ def demo_aging():
               f" (waited {first.waited:.0f} s)")
 
 
+def settings_from(args, **extra):
+    busy = dict(hotspot_share=0.4, incidents=args.size * 2, shift_changes=args.drivers // 5)
+    return SimSettings(cols=args.size, rows=args.size, drivers=args.drivers,
+                       requests=args.requests, seed=args.seed,
+                       **(busy if args.busy else {}), **extra)
+
+
 def demo_simulate(args):
-    title("simulate: one hour on a 20 x 20 grid split by a river")
-    settings = SimSettings(drivers=args.drivers, requests=args.requests, seed=args.seed)
+    title(f"simulate: one hour on a {args.size} x {args.size} grid split by a river")
+    settings = settings_from(args)
     print(f"  {settings.drivers} drivers, {settings.requests} requests over"
           f" {settings.duration / 60:.0f} min, a round every {settings.round_every:.0f} s")
+    if args.busy:
+        print(f"  busy mode: {settings.hotspot_share:.0%} of pickups near {settings.hotspots}"
+              f" hotspots, {settings.incidents} road incidents,"
+              f" {settings.shift_changes} driver shift changes")
     for line in simulate(settings).report_lines():
         print("  " + line)
+
+
+def demo_compare(args):
+    title("compare: same workload, Phase 2 vs Phase 3 dispatcher")
+    results = {}
+    for engine in ("phase2", "phase3"):
+        # Phase 2's queue key is used for both so the outcomes can be compared.
+        results[engine] = simulate(settings_from(args, engine=engine, keep_tier_order=False))
+    old, new = results["phase2"], results["phase3"]
+    print(f"  {args.size} x {args.size} grid, {args.drivers} drivers, {args.requests} requests")
+    print(f"  {'':<22}{'Phase 2':>12}{'Phase 3':>12}")
+    for label, a, b in [("served", old.served, new.served),
+                        ("average wait (s)", f"{old.avg_wait:.1f}", f"{new.avg_wait:.1f}"),
+                        ("average pickup (s)", f"{old.avg_pickup:.1f}", f"{new.avg_pickup:.1f}"),
+                        ("road searches", old.counters["searches"], new.counters["searches"]),
+                        ("run time (s)", f"{old.elapsed:.3f}", f"{new.elapsed:.3f}")]:
+        print(f"  {label:<22}{a!s:>12}{b!s:>12}")
+    same = [(m.request_id, m.driver_id) for m in old.matches] == \
+           [(m.request_id, m.driver_id) for m in new.matches]
+    print(f"  speed-up {old.elapsed / max(new.elapsed, 1e-9):.1f}x;"
+          f" identical matches: {'yes' if same else 'no'}")
 
 
 DEMOS = {
@@ -129,18 +165,25 @@ DEMOS = {
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("scenario", nargs="?", default="all",
-                        choices=["all", *DEMOS, "simulate"])
+                        choices=["all", *DEMOS, "simulate", "compare"])
+    parser.add_argument("--size", type=int, default=20, help="streets per side of the grid city")
+    parser.add_argument("--busy", action="store_true",
+                        help="add hotspots, road incidents and driver shift changes")
     parser.add_argument("--drivers", type=int, default=60)
     parser.add_argument("--requests", type=int, default=300)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args(argv)
     if args.drivers < 1 or args.requests < 0:
         parser.error("you need at least one driver and zero or more requests")
+    if args.size < 2:
+        parser.error("the city needs at least 2 streets per side")
 
-    picked = list(DEMOS) + ["simulate"] if args.scenario == "all" else [args.scenario]
+    picked = list(DEMOS) + ["simulate", "compare"] if args.scenario == "all" else [args.scenario]
     for name in picked:
         if name == "simulate":
             demo_simulate(args)
+        elif name == "compare":
+            demo_compare(args)
         else:
             DEMOS[name]()
     return 0

@@ -6,12 +6,14 @@ that choice in plain Python.
 
 * **Phase 1** was the design (`Deliverable1_Report.docx`; the original code
   is in `MSCS532_Project_Code.zip`).
-* **Phase 2** (this version) turns that code into a package and adds a
-  working proof of concept: a driver search that is guaranteed to find the
-  quickest driver, a queue that one unreachable rider can't block, tier
-  bumps for riders who wait too long, drivers going on and offline, a small
-  simulation, a command-line demo and 51 unit tests
-  (`Deliverable2_Report.docx`).
+* **Phase 2** turned that code into a package and a working proof of
+  concept: an exact driver search, a queue that one unreachable rider can't
+  block, tier bumps, driver states, a simulation, a demo and 51 tests
+  (`Deliverable2_Report.docx`). A frozen copy lives in `dispatch/phase2/`
+  so Phase 3 can be compared against it.
+* **Phase 3** (this version) optimises and scales everything, adds stress
+  tests and benchmarks, and gives the same matches as Phase 2 on the same
+  workload (`Deliverable3_Report.docx`).
 
 ## Layout
 
@@ -23,11 +25,19 @@ dispatch/
   models.py          Driver, TripRequest, Assignment, DriverState, TIER_PRIORITY
   dispatcher.py      Dispatcher: ties the structures together
   city_builder.py    made-up street grids (and rivers) for the demo and tests
-  simulation.py      event-driven simulation of one hour of requests
+  simulation.py      event-driven simulation (streaming arrivals, hotspots,
+                     road incidents, driver shift changes, either engine)
+  phase2/            frozen Phase 2 code, the baseline for comparisons
 demo.py              command-line demo of every scenario
-tests/               unittest suite, one file per module
-results/             saved demo and test output
-screenshots/         terminal captures of the demo, simulation and test runs
+benchmarks/
+  run_benchmarks.py  Phase 2 vs Phase 3 timings and memory -> results/benchmarks.json
+  make_figures.py    draws figures/*.png from that JSON (needs matplotlib)
+tests/               unittest suite: one file per module, plus
+  test_phase3.py     new code vs Phase 2 vs brute force on random input
+  test_stress.py     large inputs, extreme conditions, bad input (STRESS=1 = 10x)
+results/             saved demo, test and benchmark output
+figures/             benchmark graphs used in the report
+screenshots/         terminal captures
 ```
 
 | Module | Data structure | What it does |
@@ -37,7 +47,25 @@ screenshots/         terminal captures of the demo, simulation and test runs
 | `road_network.py` | Adjacency dicts (in and out edges) | Drive times with Dijkstra; one backward search ranks several drivers |
 | `dispatcher.py` | Dicts of drivers, requests, trips + the above | Gives each request to the driver who can get there first |
 
-## What changed since Phase 1
+## What changed in Phase 3
+
+| Bottleneck in Phase 2 | Phase 3 fix | Effect |
+| --- | --- | --- |
+| `SpatialGrid.nearest` scanned every occupied cell on each query, then sorted every point it saw | bounding box of occupied cells (O(1) amortised), fall back to a direct scan when rings would be mostly empty, keep only possible top-k points | 165x faster at 128,000 drivers |
+| `pick_driver` doubled k and restarted the grid query and Dijkstra each time | one backward Dijkstra that stops at the first intersection with a free driver (`RoadNetwork.nearest_source`) + per-intersection free-driver index | 101 → 14 intersections settled, 17x faster (160x160 river city) |
+| unreachable requests re-ran a full search every round | straight-line "anyone in range?" check, and a dead-end cache that only resets when a driver frees up / moves or a street changes | busy 100x100 simulation 6.9 s → 3.1 s |
+| `age_requests` looked at every waiting request, O(n log n) per round | heap of next-bump times with lazy deletion; O(p log n) for p bumps | 123x faster at 64,000 waiting |
+| heap compared list slices and swapped entries | tuple entries, hole-based sifting, `push_many` with O(n) heapify | 1.5-2.2x faster per operation |
+| trip routes used plain Dijkstra | A* with straight-line bound or ALT landmark tables, ties broken towards larger g, LRU route cache cleared on any street change | 14x faster than Dijkstra on 160x160 |
+| all requests generated up front onto the event heap | streaming sorted-uniform arrivals, `array('d')` waits, slotted records | 1 → 8 h shift: +0.7 MiB vs +2.0 MiB |
+| bumped standard riders overtook accessible riders | queue key (level, original tier, time); `keep_tier_order=False` restores Phase 2 | fairness fix |
+
+Whole simulations run 2-14x faster than Phase 2 and, on 10 of 11 benchmark
+runs, make identical matches (the 11th differs only in which of two drivers
+tied at 150 s gets picked). The cost is about 31% more peak memory for the
+extra indexes and landmark tables. 105 tests pass; see `results/`.
+
+## What changed in Phase 2
 
 | Problem in Phase 1 | What Phase 2 does |
 | --- | --- |
@@ -48,7 +76,8 @@ screenshots/         terminal captures of the demo, simulation and test runs
 
 ## Requirements
 
-Python 3.8 or newer. No third-party packages.
+Python 3.10 or newer (slotted dataclasses). No third-party packages for the
+package, demo and tests; `benchmarks/make_figures.py` needs matplotlib.
 
 ## Running
 
@@ -56,12 +85,17 @@ Python 3.8 or newer. No third-party packages.
 python3 demo.py                 # every scenario
 python3 demo.py river           # one of: basic | river | blocking | aging | simulate
 python3 demo.py simulate --drivers 40 --requests 300 --seed 7
+python3 demo.py simulate --size 60 --drivers 540 --requests 900 --busy
+python3 demo.py compare --size 60 --drivers 540 --requests 900   # Phase 2 vs Phase 3
+python3 benchmarks/run_benchmarks.py            # ~15 min; --quick for a short run
+python3 benchmarks/make_figures.py
 ```
 
 Tests:
 
 ```
 python3 -m unittest discover -s tests -t . -v
+STRESS=1 python3 -m unittest tests.test_stress -v     # stress tests at 10x size
 ```
 
 A lot of the tests compare the fast code with a slow version that is easy

@@ -11,12 +11,12 @@
   D1 logged off; free drivers: 1
   quickest route (0,0) -> (3,2): 150 s through 6 intersections
 
-=== river: fixed list (Phase 1) vs widened search (Phase 2) =====
+=== river: fixed list (Phase 1) vs exact search (Phase 3) =======
   A river runs between columns 4 and 5 and the only bridge is in row 9.
   The pickup is at (4, 1). Four drivers are just across the water and
   one is further away in a straight line but on the same side, at (1, 4).
-  fixed list (Phase 1): across_3  pickup 480 s  [1 search(es), 0 widening(s)]
-  widened (Phase 2)   : same_bank pickup 180 s  [2 search(es), 1 widening(s)]
+  fixed list (Phase 1)  : across_3  pickup 480 s  [1 search(es), 86 intersections settled]
+  exact search (Phase 3): same_bank pickup 180 s  [1 search(es), 30 intersections settled]
 
 === blocking: request nobody can reach is at the front ==========
   assign_top      served nobody          still waiting: ['far_premium', 'near_standard']
@@ -32,14 +32,55 @@
   served              300 (100.0%)
   rider cancelled     0
   still waiting       0
-  average wait        2.4 s
-  95th pct wait       4.8 s
-  average pickup      103.8 s
-    accessible wait   2.3 s
-    premium wait      2.7 s
-    standard wait     2.4 s
-  Dijkstra searches   311 (search widened 11 times)
-  skipped, retried    0
+  average wait        2.5 s
+  95th pct wait       4.7 s
+  average pickup      121.8 s
+    accessible wait   2.7 s
+    premium wait      2.6 s
+    standard wait     2.5 s
+  road searches       301 (13008 intersections settled)
+  dead ends skipped   0 (cache 0, straight-line check 0)
+  skipped, retried    1
   tier bumps          0
-  events handled      1621
-  run time            0.054 s
+  events handled      1621 (at most 122 queued at once)
+  run time            0.030 s (+ 0.004 s building landmarks)
+
+=== compare: same workload, Phase 2 vs Phase 3 dispatcher =======
+  20 x 20 grid, 60 drivers, 300 requests
+                             Phase 2     Phase 3
+  served                         300         300
+  average wait (s)               2.5         2.5
+  average pickup (s)           121.8       121.8
+  road searches                  327         301
+  run time (s)                 0.079       0.034
+  speed-up 2.3x; identical matches: yes
+
+=== compare: same workload, Phase 2 vs Phase 3 dispatcher =======
+  80 x 80 grid, 960 drivers, 1200 requests
+                             Phase 2     Phase 3
+  served                        1200        1200
+  average wait (s)               2.5         2.5
+  average pickup (s)            76.0        76.0
+  road searches                 1240        1200
+  run time (s)                 3.173       0.396
+  speed-up 8.0x; identical matches: yes
+
+=== simulate: one hour on a 60 x 60 grid split by a river =======
+  540 drivers, 900 requests over 60 min, a round every 5 s
+  busy mode: 40% of pickups near 3 hotspots, 120 road incidents, 108 driver shift changes
+  requests            900
+  served              900 (100.0%)
+  rider cancelled     0
+  still waiting       0
+  average wait        14.4 s
+  95th pct wait       97.6 s
+  average pickup      219.0 s
+    accessible wait   3.7 s
+    premium wait      5.5 s
+    standard wait     17.2 s
+  road searches       1686 (491619 intersections settled)
+  dead ends skipped   1359 (cache 1359, straight-line check 0)
+  skipped, retried    2145
+  tier bumps          28
+  events handled      3924 (at most 684 queued at once)
+  run time            0.657 s (+ 0.042 s building landmarks)

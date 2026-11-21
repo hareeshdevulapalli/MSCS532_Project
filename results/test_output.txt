@@ -1,3 +1,7 @@
+test_exact_search_finds_the_quickest_driver (tests.test_dispatcher.ExactSearchTests.test_exact_search_finds_the_quickest_driver) ... ok
+test_fixed_list_misses_the_quickest_driver (tests.test_dispatcher.ExactSearchTests.test_fixed_list_misses_the_quickest_driver) ... ok
+test_matches_slow_search_on_random_cities (tests.test_dispatcher.ExactSearchTests.test_matches_slow_search_on_random_cities) ... ok
+test_one_search_and_few_intersections_on_open_grid (tests.test_dispatcher.ExactSearchTests.test_one_search_and_few_intersections_on_open_grid) ... ok
 test_constructor_validation (tests.test_dispatcher.LifeCycleAndErrorTests.test_constructor_validation) ... ok
 test_driver_trip_cycle (tests.test_dispatcher.LifeCycleAndErrorTests.test_driver_trip_cycle) ... ok
 test_invalid_requests_and_ids (tests.test_dispatcher.LifeCycleAndErrorTests.test_invalid_requests_and_ids) ... ok
@@ -13,10 +17,6 @@ test_bumps_stop_at_top_level (tests.test_dispatcher.QueueFairnessTests.test_bump
 test_no_bumping_keeps_strict_tiers (tests.test_dispatcher.QueueFairnessTests.test_no_bumping_keeps_strict_tiers) ... ok
 test_round_without_drivers_changes_nothing (tests.test_dispatcher.QueueFairnessTests.test_round_without_drivers_changes_nothing) ... ok
 test_run_round_skips_and_requeues_unreachable_request (tests.test_dispatcher.QueueFairnessTests.test_run_round_skips_and_requeues_unreachable_request) ... ok
-test_fixed_list_misses_the_quickest_driver (tests.test_dispatcher.WidenedSearchTests.test_fixed_list_misses_the_quickest_driver) ... ok
-test_matches_slow_search_on_random_cities (tests.test_dispatcher.WidenedSearchTests.test_matches_slow_search_on_random_cities) ... ok
-test_no_widening_needed_on_open_grid (tests.test_dispatcher.WidenedSearchTests.test_no_widening_needed_on_open_grid) ... ok
-test_widened_search_finds_the_quickest_driver (tests.test_dispatcher.WidenedSearchTests.test_widened_search_finds_the_quickest_driver) ... ok
 test_change_priority_moves_entry_both_ways (tests.test_indexed_heap.IndexedMinHeapTests.test_change_priority_moves_entry_both_ways) ... ok
 test_duplicate_key_rejected (tests.test_indexed_heap.IndexedMinHeapTests.test_duplicate_key_rejected) ... ok
 test_empty_heap_errors (tests.test_indexed_heap.IndexedMinHeapTests.test_empty_heap_errors) ... ok
@@ -24,6 +24,40 @@ test_pop_order_and_arrival_ties (tests.test_indexed_heap.IndexedMinHeapTests.tes
 test_random_operations_match_plain_dict (tests.test_indexed_heap.IndexedMinHeapTests.test_random_operations_match_plain_dict) ... ok
 test_single_entry_and_all_keys (tests.test_indexed_heap.IndexedMinHeapTests.test_single_entry_and_all_keys) ... ok
 test_tuple_priorities_order_tier_then_time (tests.test_indexed_heap.IndexedMinHeapTests.test_tuple_priorities_order_tier_then_time) ... ok
+test_a_far_away_driver_freeing_up_keeps_the_cache (tests.test_phase3.DeadEndCacheTests.test_a_far_away_driver_freeing_up_keeps_the_cache) ... ok
+test_cache_forgets_when_a_driver_frees_up_or_a_road_opens (tests.test_phase3.DeadEndCacheTests.test_cache_forgets_when_a_driver_frees_up_or_a_road_opens) ... ok
+test_cache_survives_a_driver_getting_busy (tests.test_phase3.DeadEndCacheTests.test_cache_survives_a_driver_getting_busy) ... ok
+test_closing_a_street_keeps_the_cache (tests.test_phase3.DeadEndCacheTests.test_closing_a_street_keeps_the_cache) ... ok
+test_straight_line_check_skips_the_road_search (tests.test_phase3.DeadEndCacheTests.test_straight_line_check_skips_the_road_search) ... ok
+test_turning_the_cache_off_gives_same_matches (tests.test_phase3.DeadEndCacheTests.test_turning_the_cache_off_gives_same_matches) ... ok
+test_unreachable_pickup_is_searched_once (tests.test_phase3.DeadEndCacheTests.test_unreachable_pickup_is_searched_once) ... ok
+test_accessible_rider_stays_ahead_of_bumped_standard (tests.test_phase3.DispatcherEquivalenceTests.test_accessible_rider_stays_ahead_of_bumped_standard) ... ok
+test_aging_matches_phase2 (tests.test_phase3.DispatcherEquivalenceTests.test_aging_matches_phase2) ... ok
+test_bump_heap_stays_small_with_many_cancellations (tests.test_phase3.DispatcherEquivalenceTests.test_bump_heap_stays_small_with_many_cancellations) ... ok
+test_pick_driver_is_optimal_on_random_cities (tests.test_phase3.DispatcherEquivalenceTests.test_pick_driver_is_optimal_on_random_cities) ... ok
+test_same_matches_as_phase2_over_random_operations (tests.test_phase3.DispatcherEquivalenceTests.test_same_matches_as_phase2_over_random_operations) ... ok
+test_bounding_box_always_covers_every_cell (tests.test_phase3.GridEquivalenceTests.test_bounding_box_always_covers_every_cell) ... ok
+test_same_answers_as_phase2_under_churn (tests.test_phase3.GridEquivalenceTests.test_same_answers_as_phase2_under_churn) ... ok
+test_ties_go_to_smallest_id (tests.test_phase3.GridEquivalenceTests.test_ties_go_to_smallest_id) ... ok
+test_within_matches_brute_force (tests.test_phase3.GridEquivalenceTests.test_within_matches_brute_force) ... ok
+test_push_many_matches_single_pushes (tests.test_phase3.HeapEquivalenceTests.test_push_many_matches_single_pushes) ... ok
+test_push_many_rejects_duplicates (tests.test_phase3.HeapEquivalenceTests.test_push_many_rejects_duplicates) ... ok
+test_same_output_as_phase2_heap (tests.test_phase3.HeapEquivalenceTests.test_same_output_as_phase2_heap) ... ok
+test_a_faster_street_switches_landmarks_off (tests.test_phase3.LandmarkTests.test_a_faster_street_switches_landmarks_off) ... ok
+test_landmark_astar_is_exact_on_random_cities (tests.test_phase3.LandmarkTests.test_landmark_astar_is_exact_on_random_cities) ... ok
+test_landmark_memory_is_reported (tests.test_phase3.LandmarkTests.test_landmark_memory_is_reported) ... ok
+test_landmarks_settle_fewer_nodes (tests.test_phase3.LandmarkTests.test_landmarks_settle_fewer_nodes) ... ok
+test_landmarks_stay_exact_through_closures_and_reopenings (tests.test_phase3.LandmarkTests.test_landmarks_stay_exact_through_closures_and_reopenings) ... ok
+test_astar_matches_phase2_dijkstra (tests.test_phase3.RoadSearchTests.test_astar_matches_phase2_dijkstra) ... ok
+test_astar_settles_fewer_nodes_than_dijkstra (tests.test_phase3.RoadSearchTests.test_astar_settles_fewer_nodes_than_dijkstra) ... ok
+test_nearest_source_matches_brute_force (tests.test_phase3.RoadSearchTests.test_nearest_source_matches_brute_force) ... ok
+test_route_cache_has_a_size_limit (tests.test_phase3.RoadSearchTests.test_route_cache_has_a_size_limit) ... ok
+test_route_cache_is_cleared_when_a_street_changes (tests.test_phase3.RoadSearchTests.test_route_cache_is_cleared_when_a_street_changes) ... ok
+test_arrival_stream_is_sorted_complete_and_uniform (tests.test_phase3.SimulationPhase3Tests.test_arrival_stream_is_sorted_complete_and_uniform) ... ok
+test_both_engines_agree_on_the_same_workload (tests.test_phase3.SimulationPhase3Tests.test_both_engines_agree_on_the_same_workload) ... ok
+test_busy_scenario_keeps_books_balanced (tests.test_phase3.SimulationPhase3Tests.test_busy_scenario_keeps_books_balanced) ... ok
+test_event_heap_does_not_grow_with_the_shift (tests.test_phase3.SimulationPhase3Tests.test_event_heap_does_not_grow_with_the_shift) ... ok
+test_unknown_engine (tests.test_phase3.SimulationPhase3Tests.test_unknown_engine) ... ok
 test_bad_input (tests.test_road_network.RoadNetworkTests.test_bad_input) ... ok
 test_bound_never_exceeds_true_driving_time (tests.test_road_network.RoadNetworkTests.test_bound_never_exceeds_true_driving_time) ... ok
 test_max_speed_and_lower_bound (tests.test_road_network.RoadNetworkTests.test_max_speed_and_lower_bound) ... ok
@@ -36,8 +70,8 @@ test_all_scenarios_run (tests.test_simulation.DemoTests.test_all_scenarios_run) 
 test_bad_arguments_are_rejected (tests.test_simulation.DemoTests.test_bad_arguments_are_rejected) ... ok
 test_river_scenario_shows_the_improvement (tests.test_simulation.DemoTests.test_river_scenario_shows_the_improvement) ... ok
 test_every_request_is_accounted_for (tests.test_simulation.SimulationTests.test_every_request_is_accounted_for) ... ok
+test_exact_search_never_gives_slower_pickups_than_fixed_list_per_request (tests.test_simulation.SimulationTests.test_exact_search_never_gives_slower_pickups_than_fixed_list_per_request) ... ok
 test_no_requests (tests.test_simulation.SimulationTests.test_no_requests) ... ok
-test_river_makes_the_search_widen (tests.test_simulation.SimulationTests.test_river_makes_the_search_widen) ... ok
 test_same_seed_gives_same_result (tests.test_simulation.SimulationTests.test_same_seed_gives_same_result) ... ok
 test_waits_never_exceed_patience (tests.test_simulation.SimulationTests.test_waits_never_exceed_patience) ... ok
 test_agrees_with_full_scan_on_random_points (tests.test_spatial_grid.SpatialGridTests.test_agrees_with_full_scan_on_random_points) ... ok
@@ -49,8 +83,28 @@ test_move_and_delete (tests.test_spatial_grid.SpatialGridTests.test_move_and_del
 test_move_inside_same_cell_keeps_one_cell (tests.test_spatial_grid.SpatialGridTests.test_move_inside_same_cell_keeps_one_cell) ... ok
 test_random_moves_still_agree_with_full_scan (tests.test_spatial_grid.SpatialGridTests.test_random_moves_still_agree_with_full_scan) ... ok
 test_rejects_bad_cell_size_and_duplicates (tests.test_spatial_grid.SpatialGridTests.test_rejects_bad_cell_size_and_duplicates) ... ok
+test_all_streets_closed (tests.test_stress.ExtremeConditionTests.test_all_streets_closed) ... ok
+test_cancel_storm (tests.test_stress.ExtremeConditionTests.test_cancel_storm) ... ok
+test_every_driver_on_one_corner (tests.test_stress.ExtremeConditionTests.test_every_driver_on_one_corner) ... ok
+test_every_request_on_one_corner (tests.test_stress.ExtremeConditionTests.test_every_request_on_one_corner) ... ok
+test_huge_and_negative_coordinates (tests.test_stress.ExtremeConditionTests.test_huge_and_negative_coordinates) ... ok
+test_island_nobody_can_reach (tests.test_stress.ExtremeConditionTests.test_island_nobody_can_reach) ... ok
+test_rapid_gps_updates (tests.test_stress.ExtremeConditionTests.test_rapid_gps_updates) ... ok
+test_zero_second_streets (tests.test_stress.ExtremeConditionTests.test_zero_second_streets) ... ok
+test_big_city_search (tests.test_stress.LargeInputTests.test_big_city_search) ... ok
+test_dispatcher_with_thousands_of_drivers_and_requests (tests.test_stress.LargeInputTests.test_dispatcher_with_thousands_of_drivers_and_requests) ... ok
+test_grid_with_many_drivers (tests.test_stress.LargeInputTests.test_grid_with_many_drivers) ... ok
+test_heap_with_many_operations (tests.test_stress.LargeInputTests.test_heap_with_many_operations) ... ok
+test_large_simulation_finishes (tests.test_stress.LargeInputTests.test_large_simulation_finishes) ... ok
+test_bad_cell_sizes (tests.test_stress.UnexpectedInputTests.test_bad_cell_sizes) ... ok
+test_bad_dispatcher_settings (tests.test_stress.UnexpectedInputTests.test_bad_dispatcher_settings) ... ok
+test_bad_request_time (tests.test_stress.UnexpectedInputTests.test_bad_request_time) ... ok
+test_bad_road_values (tests.test_stress.UnexpectedInputTests.test_bad_road_values) ... ok
+test_empty_structures (tests.test_stress.UnexpectedInputTests.test_empty_structures) ... ok
+test_nan_and_infinite_coordinates_are_rejected (tests.test_stress.UnexpectedInputTests.test_nan_and_infinite_coordinates_are_rejected) ... ok
+test_negative_simulation_sizes (tests.test_stress.UnexpectedInputTests.test_negative_simulation_sizes) ... ok
 
 ----------------------------------------------------------------------
-Ran 51 tests in 0.319s
+Ran 105 tests in 10.866s
 
 OK

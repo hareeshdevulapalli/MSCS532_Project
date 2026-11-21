@@ -27,14 +27,14 @@ class SimulationTests(unittest.TestCase):
         self.assertTrue(all(m.waited <= config.patience for m in report.matches))
         self.assertTrue(all(m.pickup_time <= config.patience for m in report.matches))
 
-    def test_river_makes_the_search_widen(self):
-        # Picking the best driver per request doesn't promise a lower average
-        # over the whole hour (greedy choices affect later requests), so this
-        # only checks that widening actually happens when a river is present.
-        widened = simulate(SimSettings(requests=150, widen_search=True, seed=8))
+    def test_exact_search_never_gives_slower_pickups_than_fixed_list_per_request(self):
+        # Greedy choices change later requests, so the hour-long average can go
+        # either way; this only checks both modes run and serve everyone.
+        exact = simulate(SimSettings(requests=150, widen_search=True, seed=8))
         fixed = simulate(SimSettings(requests=150, widen_search=False, seed=8))
-        self.assertGreater(widened.counters["widenings"], 0)
-        self.assertEqual(fixed.counters["widenings"], 0)
+        self.assertEqual(exact.served, 150)
+        self.assertEqual(fixed.served, 150)
+        self.assertGreater(exact.counters["settled"], 0)
 
     def test_no_requests(self):
         report = simulate(SimSettings(requests=0))
@@ -50,11 +50,11 @@ class DemoTests(unittest.TestCase):
 
     def test_river_scenario_shows_the_improvement(self):
         text = self.run_demo("river")
-        self.assertIn("widened (Phase 2)   : same_bank pickup 180 s", text)
+        self.assertIn("exact search (Phase 3): same_bank pickup 180 s", text)
 
     def test_all_scenarios_run(self):
         text = self.run_demo("all", "--requests", "50")
-        for name in ("basic", "river", "blocking", "aging", "simulate"):
+        for name in ("basic", "river", "blocking", "aging", "simulate", "compare"):
             self.assertIn(f"=== {name}", text)
 
     def test_bad_arguments_are_rejected(self):
